@@ -1,0 +1,8 @@
+- name: Recopilar especificaciones del sistema
+  hosts: all
+  gather_facts: yes
+  remote_user: root  # Reemplaza 'tu_usuario_ssh' con tu nombre de usuario SSH
+  tasks:
+    - name: Mostrar información del sistema
+      debug:
+        msg: "Hostname: {{ ansible_hostname }}, Sistema operativo: {{ ansible_distribution }} {{ ansible_distribution_version }}"

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portal de Ansible</title>
+    <style>
+        .terminal {
+            background-color: #000;
+            color: #0f0;
+            padding: 10px;
+            font-family: monospace;
+            height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+    <script>
+        function runPlaybook(playbook) {
+            fetch('/run/' + playbook)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('terminal').innerText = data.stdout + data.stderr;
+                });
+        }
+
+        function runAllPlaybooks() {
+            fetch('/run_all')
+                .then(response => response.json())
+                .then(data => {
+                    let output = '';
+                    for (let playbook in data) {
+                        output += 'Playbook: ' + playbook + '\n';
+                        output += data[playbook].stdout + '\n' + data[playbook].stderr + '\n';
+                    }
+                    document.getElementById('terminal').innerText = output;
+                });
+        }
+    </script>
+</head>
+<body>
+    <h1>Portal de Ansible</h1>
+    <h2>Playbooks Disponibles</h2>
+    <ul>
+        {% for playbook in playbooks %}
+        <li>
+            <a href="#" onclick="runPlaybook('{{ playbook }}')">{{ playbook }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <button onclick="runAllPlaybooks()">Ejecutar Todos los Playbooks</button>
+    <h2>Subir Nuevo Playbook</h2>
+    <form action="{{ url_for('upload_playbook') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Subir">
+    </form>
+    <h2>Terminal</h2>
+    <div id="terminal" class="terminal"></div>
+</body>
+</html>
